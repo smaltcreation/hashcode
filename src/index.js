@@ -54,6 +54,7 @@ function main(stdin) {
         endpoint.addCacheServerLatency(cacheServerId, latency);
       }
 
+      endpoint.sortCacheServers();
       endpoints.set(endpointId, endpoint);
     }
   }
@@ -62,46 +63,45 @@ function main(stdin) {
   // console.log(endpoints);
 
   // Requests
+  const ratios = [];
+
   for (let i = 0; i < totalRequests; i++) {
     const [ videoId, endpointId, requests ] = stdin.shift().split(' ').map(x => parseInt(x));
 
     if (videos.has(videoId)) {
-      videos.get(videoId).addRequests(endpointId, requests);
+      const video = videos.get(videoId);
+      video.addRequests(endpointId, requests);
+
+      ratios.push({
+        videoId,
+        endpointId,
+        value: requests / video.size,
+      });
     }
   }
 
+  // Sort ratios
+  ratios.sort((a, b) => b.value - a.value);
+
   // Solve
-  videos.forEach(video => {
-    let maxRequests = 0;
-    let bestEndpointId = null;
+  ratios.forEach(ratio => {
+    const video = videos.get(ratio.videoId);
+    const endpoint = endpoints.get(ratio.endpointId);
 
-    video.requestsByEndpoints.forEach((requests, endpointId) => {
-      if (requests > maxRequests) {
-        maxRequests = requests;
-        bestEndpointId = endpointId;
-      }
-    });
-
-    if (!endpoints.has(bestEndpointId)) {
+    if (endpoint === undefined) {
       return false;
     }
 
-    const bestEndpoint = endpoints.get(bestEndpointId);
-    let minLatency = Infinity;
-    let bestCacheServerId = null;
+    endpoint.cacheServersLatencies.some(options => {
+      const cacheServer = cacheServers.get(options.cacheServerId);
+      const videoAdded = !cacheServer.hasVideo(video) && cacheServer.remainingSpace >= video.size;
 
-    bestEndpoint.cacheServersLatencies.forEach((latency, cacheServerId) => {
-      if (latency < minLatency) {
-        minLatency = latency;
-        bestCacheServerId = cacheServerId;
+      if (videoAdded) {
+        cacheServer.addVideo(video);
       }
+
+      return videoAdded;
     });
-
-    const bestCacheServer = cacheServers.get(bestCacheServerId);
-
-    if (!bestCacheServer.hasVideo(video) && bestCacheServer.remainingSpace >= video.size) {
-      bestCacheServer.addVideo(video);
-    }
   });
 
   // Output
