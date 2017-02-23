@@ -3,11 +3,18 @@ class Endpoint {
     this.endpointId = endpointId;
     this.datacenterLatency = datacenterLatency;
     this.totalConnectedCacheServers = totalConnectedCacheServers;
-    this.cacheServersLatencies = new Map();
+    this.cacheServersLatencies = [];
   }
 
   addCacheServerLatency(cacheServerId, latency) {
-    this.cacheServersLatencies.set(cacheServerId, latency);
+    this.cacheServersLatencies.push({
+      cacheServerId,
+      latency,
+    });
+  }
+
+  sortCacheServers() {
+    this.cacheServersLatencies.sort((a, b) => a.latency - b.latency);
   }
 }
 
