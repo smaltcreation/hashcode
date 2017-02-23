@@ -9,5 +9,5 @@ Node 6
 # Run
 
 ```bash
-npm run < inputs/kittens.in
+npm run start < inputs/kittens.in
 ```
