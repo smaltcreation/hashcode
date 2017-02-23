@@ -1,0 +1,22 @@
+{
+  "name": "hashcode",
+  "version": "1.0.0",
+  "description": "Hash Code 2017",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wdhif/hashcode.git"
+  },
+  "author": "Team SUPINFO Lyon",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wdhif/hashcode/issues"
+  },
+  "homepage": "https://github.com/wdhif/hashcode#readme",
+  "dependencies": {
+    "get-stdin": "^5.0.1"
+  }
+}
