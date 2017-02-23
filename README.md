@@ -11,3 +11,9 @@ Node 6
 ```bash
 npm run start < inputs/kittens.in
 ```
+
+# Generate output
+
+```bash
+node src/index.js < inputs/me_at_the_zoo.in > outputs/me_at_the_zoo.out
+```
